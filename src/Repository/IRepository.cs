@@ -8,5 +8,6 @@ namespace Repository
         public void Delete(object id);
         public T GetById(object id);
         public IEnumerable<T> GetAll();
+        public void Save();
     }
 }

@@ -1,0 +1,168 @@
+~~~~~~ ORM ~~~~~~
+
+DATABASE FIRST approach ==> db already existing , ORM (EF Core) maps data to a OOP via a scaffoldin procedure
+
+	>> DBContext : 
+		- it's a EF Core class responsible for communication w/ db
+		- EF Core creates automatically a context (es. W3SchoolsContext) that inherits from DBContext
+		- Code is modeled after data (as opposed to CODE FIRST)
+		==> Check DB Profiler! __check UOW also__
+
+	>> ...
+
+
+	////
+
+	main SQL objects in EF:
+		-> SqlDataReader (simply reads row after row a subset of data selected from one or more tables from a db)
+		-> SqlDataAdapter (more sophisticated, it reads and populates a DataTable obj w/ retrieved data)
+
+	
+		there is a 1:1 relationship between the DBRM and the object oriented model of data: every table is mapped to a class, rows are converted to collections of objects derived from model classes
+
+		ORM are an easier way to map these datasets: Entity Framework is the .NET mapper
+
+		2 main approaches:
+			-> CODE FIRST
+			-> DATABASE FIRST : db already exists, ORM maps existing data to a OOP version. EF automatically generates a class for every db entity via a process called 'scaffolding' managed via CLI
+
+		Q: what is 
+
+	////
+
+	PROJECTION & SELECTION
+
+	https://www.ibm.com/docs/en/informix-servers/14.10?topic=concepts-selection-projection 
+
+		___ read (well!) LINQ book ==> search docs on 
+			.Chunk(), 
+			.Except(), 
+			.Intercept(), 
+			.Append/Propend(), 
+			.Union(), 
+			.Range(), 
+			.Reverse(), 
+			.Repeat() (I listened jackshit abt this crap) 
+		___
+
+
+~~~~ PROJECT ARCHITECTURE(S) ~~~~
+
+1) Monolithic (NO)
+2) Modular (YES)
+
+2) 
+	Model (ENTITIES abstraction of real-world objects into data)
+	Business logic (how objects described in Model interact w/ each other and the system)
+	
+---> SOA (Service Oriented Architecture)
+
+- Interfaces as Contracts 
+how do services coded in different languages (c#, c++, php..) communicate with each other?
+	Standard languages >> xml
+	Information travels through the Web with communication protocols -> HTTP (HyperText Transfer Protocol)
+
+SOA ---> 2 major protocols: SOAP (Simple Object Access Protocol) & REST (Representational State Transfer)
+
+>>>>>> something something HTTP methods somethingsomething GETPOSTPUTPATCHDELETEHEAD and others <<<<<<<
+===> get, post -> NOT IDEMPOTENT!!!
+===> put, patch, delete(?) -> IDEMPOTENT!
+
+
+~~~~ library application ===> separation of concerns ~~~~
+
+
+STEP 1 > new project BLANK SOLUTION 
+	this empty solution is just a container for all the projects
+
+STEP 2 > define a model for a real world object (eg: a Book) 
+	DEFINITION of a book: 'title', 'author(s)', 'publisher', 'publishing year' ...
+
+STEP 3 > create a class library project responsible for all entities (folder Model)
+basic elements of SOA architecture:
+	-> Service
+	-> Repository
+	-> Front end
+	
+q: http statuses => what does a 404 http response mean?
+
+q: qhat are the main normal forms of a DB?
+		DATABASE NORMAL FORMS
+	0NF — Zero Normal Form: Data that is not yet normalized
+	1NF — First Normal Form: Data that is de-duplicated and with key attributes identified
+	2NF — Second Normal Form: Achieves full functional dependencies on the key attributes
+	3NF — Third Normal Form: Removes transitive dependencies
+	Boyce-Codd Normal Form: Eliminates all functional dependencies on non-key attributes that can be used as candidate key(s)
+	4NF & 5NF — Fourth and Fifth Normal Forms: Removes multi-value dependencies and join dependencies
+	
+q: INHERITANCE
+
+STEP 4 > create REPOSITORY project and install -> EntityFrameworkCore, .Design, .SqlServer, 
+
+STEP 5 > create DataContext : DbContext
+
+STEP 6 > MIGRATION!
+	!!! >> check if entityframework tools are installed!
+	===>   (command to install tools: dotnet tool install --global dotnet-ef )    <===
+
+	command to ignite migration:
+		dotnet ef migrations add initialcreate
+
+	command to finalize migration:
+		dotnet ef database update
+
+	command for subsequent migrations (post modifications in columns)
+		dotnet ef migrations add <MIGRATION_NAME>
+
+~~~ INTERMISSION: => design patterns ~~~
+
+Inversion of control (IOC)
+	dependency injection (3 types)
+		- property injection (property of type T in class C)
+		- method injection (method that requires an object T in its params)
+		- constructor injection (object T required in ctor of class C)
+	3rd option is the most used. 
+
+	dependency injection is a pattern used for DECOUPLING of classes
+	classes SHOULD be as independent as possible from each other
+
+
+Repository pattern 
+		
+structure of a business factory database:
+	separation of concerns
+		a different project for every responsibility (model, service, repository, etc)
+	
+	abstraction: our ORM implementation SHOULD be as generic as possible (depends on the specific project) --> usage of Generics
+	
+	example of abstraction: if we need a collection of [model] objects, we create interfaces that can function with generic IEnumerable<T>
+
+>>>> CONSTRAINTS in generic classes <<<<
+
+
+syntax to create a generic class with specific constraints 
+
+	class GenericClass<T> where T : AbstractClass { }
+							^^ 
+		This class can use only AbstractClass objects OR its children
+
+	class AnotherGenericClass<T> where T : AbstractClass, new() { }
+															^^ 
+		Only <T> that inherits from AbstractClass AND can be instantiated
+	
+	class GenericClass<T> where T : class { }
+		Only <T> of a REFERENCE TYPE (classes)
+
+	class GenericClass<T> where T : struct { }
+		Only <T> of VALUE TYPE (primitives like int)
+
+>>>> constraints are extremely useful when implementing crud methods to search in generic dbsets
+
+! --> study well exceptions, error propagation, how to handle null reference exceptions, rethrow ex, ThrowIfNull, etc
+
+!! interesting stuff: C# supports dynamic typing  (check it out)
+
+
+____ our first WEBSERVICE >> Model-View-Controller pattern ____
+
+---> create a new .NETCore Web Api project in the solution
