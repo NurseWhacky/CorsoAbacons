@@ -84,6 +84,8 @@ basic elements of SOA architecture:
 	-> Repository
 	-> Front end
 	
+q: HTTP (Hypertext Transfer Protocol) is a client/server protocol 
+
 q: http statuses => what does a 404 http response mean?
 
 q: qhat are the main normal forms of a DB?
@@ -163,6 +165,30 @@ syntax to create a generic class with specific constraints
 !! interesting stuff: C# supports dynamic typing  (check it out)
 
 
-____ our first WEBSERVICE >> Model-View-Controller pattern ____
+____ our first WEBSERVICE >> (Web API 2.0) Model-View-Controller pattern ____
 
 ---> create a new .NETCore Web Api project in the solution
+
+> parts of a HTTP requests: (https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)
+	request line -> contains the HTTP method, URI (ex Index), HTTP version (es HTTP/2)
+		GET /Index /HTTP/2
+	request header 
+		-> headers contains info abt the client and metadata tied to the request (eg: language, authentication strings...)
+	blank line
+	request body -> not contained in get/delete reqs. POST, PUT/PATCH methods usually have a body 
+
+Microsoft .NET Web API 2.0 works with certain conventions: when a client sends a request, it automatically searches for a Controller w/ corresponding name. --> if the request is: 
+	GET /Home HTTP/2 --> Web API 2.0 will look for a class called HomeController and inside this class will call THE method Get...(). In case of ambiguity (2 diff Get..() methods for the same URI) the server will give an error 
+
+	(Web API 2.0 makes the workings of the routing opaque: the framework layer does all the heavy lifting and our job is to implement the actual req methods w/o worrying abt the underlying complexity of the network itself)
+
+	ASP.NETCore's router CATCHES a request, instantiates the specific controller (if the request contains the identifier 'Genre' it searches for a GenreController class and calls its ctor)
+
+	The builder.Services object can be configured to supply an instance of the Repository injected into the Controller as a private readonly property.
+	3 ways to supply instances:
+		1. singleton (1 repo object for the entire app) -> builder.Services.AddSingleton([IRepo<>])
+		2. scoped (1 repo object per connection) -> builder.Services.AddScoped()
+		3. transient (1 repo per request) -> builder.Services.AddTransient()
+		~~~ see docs for these methods!
+
+	REQUEST BODY --> send a serialization of our entity objects

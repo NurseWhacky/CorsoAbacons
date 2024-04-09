@@ -13,11 +13,13 @@ namespace Repository
         public EFRepository()
         {
             this.context = new DataContext();
+            table = context.Set<T>();
         }
 
         public EFRepository(DataContext context)
         {
             this.context = context;
+            table = context.Set<T>();
         }
         public void Add(T entity)
         {
@@ -45,7 +47,7 @@ namespace Repository
             return table.Find(id);
         }
 
-        // THIS method finalizes changes in DB. Q: why not call it directly inside the Update, Delete and Add method? --> A: so we can control when finalize modification, eg. at the end of a series of modification on the same table, and then CLOSE the connection 
+        // THIS method finalizes changes in DB. Q: why not call it directly inside the Update, Delete and Add method? --> A: so we can control when to finalize modification, eg. at the end of a series of modification on the same table, and then CLOSE the connection 
         public void Save()
         {
             context.SaveChanges();
