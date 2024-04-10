@@ -4,37 +4,14 @@ using Repository;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class GenresController : Controller
+    public class GenresController : AbstractController<Genre>
     {
         private readonly IRepository<Genre> repo;
 
-        public GenresController(IRepository<Genre> repository)
+        public GenresController(IRepository<Genre> repo) : base(repo)
         {
-            this.repo = repository;
+            this.repo = repo;
         }
 
-        [HttpGet]
-        [Route("All")]
-        public IEnumerable<Genre> GetAll() 
-        {
-            return repo.GetAll().ToList();
-        }
-
-        [HttpGet]
-        [Route("Id/{id}")]
-        public Genre GetById(int id)
-        {
-            return repo.GetById(id) ?? new Genre() { GenreName = "Poba", CreationDate = DateTime.Now, LastModified = DateTime.Now, Books = [], Id = 0 };
-        }
-
-        [HttpPost]
-        [Route("Add")]
-        public void Post(Genre entity)
-        {
-            repo.Add(entity);
-            repo.Save();
-        }
     }
 }

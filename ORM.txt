@@ -192,3 +192,22 @@ Microsoft .NET Web API 2.0 works with certain conventions: when a client sends a
 		~~~ see docs for these methods!
 
 	REQUEST BODY --> send a serialization of our entity objects
+
+KESTREL ==> a small server provided by Microsoft for testing purposes
+
+PORTS ==> ///
+
+
+________________________________________________________________
+|																|
+|																|
+|																|
+|																|
+|																|
+|				METHOD HIDING VS METHOD OVERRIDING				|
+|																|
+|																|
+|																|
+|																|
+|																|
+________________________________________________________________
